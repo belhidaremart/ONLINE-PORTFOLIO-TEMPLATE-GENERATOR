@@ -176,3 +176,7 @@ p { margin: 0 0 16px; }
     .form-card { padding: 24px; }
     .form-actions .btn, .hero-actions .btn { width: 100%; }
 }
+.repeat-item { margin-bottom: 20px; padding: 20px; background: rgba(3,6,20,.5); border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+.repeat-item .form-grid, .repeat-item .field { width: 100%; }
+.current-pic { width: 96px; height: 96px; object-fit: cover; border-radius: 50%; border: 2px solid var(--cyan); }
+.field input[type="file"] { padding: 10px; }
