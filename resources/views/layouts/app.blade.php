@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        @foreach (['css/app.css', 'css/part2.css'] as $cssFile)
+                @foreach (['css/app.css', 'css/part2.css', 'css/spacing.css'] as $cssFile)
             @if (file_exists(public_path($cssFile)))
                 {!! file_get_contents(public_path($cssFile)) !!}
             @endif
