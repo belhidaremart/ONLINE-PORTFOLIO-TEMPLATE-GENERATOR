@@ -6,8 +6,7 @@
 <section class="page">
     <div class="container">
         <h1 class="page-title">Choose a Template</h1>
-        <p class="page-sub">Pick the look for {{ $portfolio->full_name }}'s portfolio. You can change it later.</p>
-
+                        <p class="page-sub">Pick the look for your portfolio. You can change it later.</p>
         @error('template')<div class="alert alert-danger">{{ $message }}</div>@enderror
 
         <form action="{{ route('portfolios.template.update', $portfolio) }}" method="POST">
