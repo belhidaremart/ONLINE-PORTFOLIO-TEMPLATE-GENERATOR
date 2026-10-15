@@ -1,8 +1,8 @@
 @php
     $eduRows = old('educations', isset($portfolio) ? $portfolio->educations->map->only(['school','degree','start_year','end_year'])->values()->all() : []);
     $skillRows = old('skills', isset($portfolio) ? $portfolio->skills->map->only(['name'])->values()->all() : []);
-    $eduCount = max(3, count($eduRows));
-    $skillCount = max(5, count($skillRows));
+    $eduCount = max(1, count($eduRows));
+    $skillCount = max(2, count($skillRows));
 @endphp
 
 @if ($errors->any())
