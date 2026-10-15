@@ -9,7 +9,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <style>
+        @foreach (['css/app.css', 'css/part2.css'] as $cssFile)
+            @if (file_exists(public_path($cssFile)))
+                {!! file_get_contents(public_path($cssFile)) !!}
+            @endif
+        @endforeach
+    </style>
     @stack('styles')
 </head>
 <body>
@@ -21,9 +27,10 @@
                 <span>Portfolio Template Generator</span>
             </a>
 
-            <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+            <input type="checkbox" id="navCheck" class="nav-check">
+            <label for="navCheck" class="nav-toggle" aria-label="Menu">&#9776;</label>
 
-            <ul class="nav-links" id="navLinks">
+            <ul class="nav-links">
                 <li><a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a></li>
                 <li><a href="{{ route('portfolios.index') }}" class="{{ request()->is('portfolios') ? 'active' : '' }}">Manage Portfolios</a></li>
                 <li><a href="{{ route('portfolios.create') }}" class="nav-cta">Create My Portfolio</a></li>
@@ -53,7 +60,5 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/app.js') }}"></script>
-    @stack('scripts')
 </body>
 </html>

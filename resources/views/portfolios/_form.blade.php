@@ -1,8 +1,8 @@
 @php
-    $educations = old('educations', isset($portfolio) ? $portfolio->educations->map->only(['school','degree','start_year','end_year'])->values()->all() : []);
-    $skills = old('skills', isset($portfolio) ? $portfolio->skills->map->only(['name'])->values()->all() : []);
-    if (!count($educations)) $educations = [[]];
-    if (!count($skills)) $skills = [[]];
+    $eduRows = old('educations', isset($portfolio) ? $portfolio->educations->map->only(['school','degree','start_year','end_year'])->values()->all() : []);
+    $skillRows = old('skills', isset($portfolio) ? $portfolio->skills->map->only(['name'])->values()->all() : []);
+    $eduCount = max(3, count($eduRows));
+    $skillCount = max(5, count($skillRows));
 @endphp
 
 @if ($errors->any())
@@ -50,49 +50,30 @@
 
 <div class="form-card">
     <h2 class="form-title">Education</h2>
-    <div id="educations-list">
-        @foreach ($educations as $i => $row)
-            <div class="repeat-item">
-                <div class="form-grid">
-                    <div class="field"><label>School</label><input type="text" name="educations[{{ $i }}][school]" value="{{ $row['school'] ?? '' }}"></div>
-                    <div class="field"><label>Degree / Course</label><input type="text" name="educations[{{ $i }}][degree]" value="{{ $row['degree'] ?? '' }}"></div>
-                    <div class="field"><label>Start Year</label><input type="text" name="educations[{{ $i }}][start_year]" value="{{ $row['start_year'] ?? '' }}"></div>
-                    <div class="field"><label>End Year</label><input type="text" name="educations[{{ $i }}][end_year]" value="{{ $row['end_year'] ?? '' }}"></div>
-                </div>
-                <button type="button" class="btn btn-sm btn-outline remove-btn">Remove</button>
+    <p class="form-hint">Leave a row empty if you don't need it.</p>
+    @for ($i = 0; $i < $eduCount; $i++)
+        @php $row = $eduRows[$i] ?? []; @endphp
+        <div class="repeat-item">
+            <div class="form-grid">
+                <div class="field"><label>School</label><input type="text" name="educations[{{ $i }}][school]" value="{{ $row['school'] ?? '' }}"></div>
+                <div class="field"><label>Degree / Course</label><input type="text" name="educations[{{ $i }}][degree]" value="{{ $row['degree'] ?? '' }}"></div>
+                <div class="field"><label>Start Year</label><input type="text" name="educations[{{ $i }}][start_year]" value="{{ $row['start_year'] ?? '' }}"></div>
+                <div class="field"><label>End Year</label><input type="text" name="educations[{{ $i }}][end_year]" value="{{ $row['end_year'] ?? '' }}"></div>
             </div>
-        @endforeach
-    </div>
-    <button type="button" class="btn btn-sm btn-outline add-btn" data-target="educations-list" data-template="tpl-education">+ Add Education</button>
+        </div>
+    @endfor
 </div>
 
 <div class="form-card">
     <h2 class="form-title">Skills</h2>
-    <div id="skills-list">
-        @foreach ($skills as $i => $row)
-            <div class="repeat-item">
-                <div class="field"><label>Skill</label><input type="text" name="skills[{{ $i }}][name]" value="{{ $row['name'] ?? '' }}"></div>
-                <button type="button" class="btn btn-sm btn-outline remove-btn">Remove</button>
+    <p class="form-hint">Leave a box empty if you don't need it.</p>
+    <div class="form-grid">
+        @for ($i = 0; $i < $skillCount; $i++)
+            @php $row = $skillRows[$i] ?? []; @endphp
+            <div class="field">
+                <label>Skill {{ $i + 1 }}</label>
+                <input type="text" name="skills[{{ $i }}][name]" value="{{ $row['name'] ?? '' }}">
             </div>
-        @endforeach
+        @endfor
     </div>
-    <button type="button" class="btn btn-sm btn-outline add-btn" data-target="skills-list" data-template="tpl-skill">+ Add Skill</button>
 </div>
-
-<template id="tpl-education">
-    <div class="repeat-item">
-        <div class="form-grid">
-            <div class="field"><label>School</label><input type="text" name="educations[__i__][school]"></div>
-            <div class="field"><label>Degree / Course</label><input type="text" name="educations[__i__][degree]"></div>
-            <div class="field"><label>Start Year</label><input type="text" name="educations[__i__][start_year]"></div>
-            <div class="field"><label>End Year</label><input type="text" name="educations[__i__][end_year]"></div>
-        </div>
-        <button type="button" class="btn btn-sm btn-outline remove-btn">Remove</button>
-    </div>
-</template>
-<template id="tpl-skill">
-    <div class="repeat-item">
-        <div class="field"><label>Skill</label><input type="text" name="skills[__i__][name]"></div>
-        <button type="button" class="btn btn-sm btn-outline remove-btn">Remove</button>
-    </div>
-</template>

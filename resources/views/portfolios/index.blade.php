@@ -34,11 +34,16 @@
                         <div class="card-actions">
                             <a href="{{ route('portfolios.show', $portfolio->id) }}" class="btn btn-sm btn-primary">View</a>
                             <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="btn btn-sm btn-outline">Edit</a>
-                            <form action="{{ route('portfolios.destroy', $portfolio->id) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                            </form>
+
+                            <details class="confirm-delete">
+                                <summary class="btn btn-sm btn-danger">Delete</summary>
+                                <form action="{{ route('portfolios.destroy', $portfolio->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <p>Delete this portfolio? This cannot be undone.</p>
+                                    <button type="submit" class="btn btn-sm btn-danger">Yes, delete</button>
+                                </form>
+                            </details>
                         </div>
                     </div>
                 @endforeach
