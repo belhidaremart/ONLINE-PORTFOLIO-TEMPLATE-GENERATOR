@@ -44,9 +44,9 @@
 
         @php
             $options = [
-                'simple'   => ['Simple', 'Classic executive résumé in navy and gold. Print-friendly.'],
-                'modern'   => ['Modern', 'Frosted-glass cards on a soft gradient, with rounded corners.'],
-                'creative' => ['Creative', 'Cyber-tech look with neon green and corner brackets, made for IT students.'],
+                'simple'   => ['Simple', 'Clean two-column résumé with a blue accent. Corporate and easy to read.'],
+                'modern'   => ['Modern', 'Dark developer style with code-inspired labels, made for IT students.'],
+                'creative' => ['Creative', 'Profile banner with a gradient header and a round photo.'],
             ];
             $number = 0;
         @endphp
