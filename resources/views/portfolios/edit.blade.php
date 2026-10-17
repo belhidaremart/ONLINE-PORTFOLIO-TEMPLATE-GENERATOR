@@ -3,22 +3,20 @@
 @section('title', 'Edit Portfolio')
 
 @section('content')
-<div class="container page-section">
-    <div class="page-header">
-        <div>
-            <span class="badge">Editing</span>
-            <h1>Edit <span class="gradient-text">{{ $portfolio->full_name }}</span></h1>
-        </div>
-        <a href="{{ route('portfolios.index') }}" class="btn btn-outline">← Back</a>
-    </div>
+<section class="page">
+    <div class="container narrow">
+        <h1 class="page-title">Edit Portfolio</h1>
+        <p class="page-sub">Change your information and press Save.</p>
 
-    <div class="card form-card">
         <form action="{{ route('portfolios.update', $portfolio) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             @include('portfolios._form')
-            <button type="submit" class="btn btn-primary">Update Portfolio</button>
+            <div class="form-actions">
+                <a href="{{ route('portfolios.show', $portfolio) }}" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
         </form>
     </div>
-</div>
+</section>
 @endsection

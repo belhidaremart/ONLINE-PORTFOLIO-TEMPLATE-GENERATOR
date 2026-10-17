@@ -43,11 +43,15 @@ class PortfolioController extends Controller
             ->with('success', 'Information saved! Now choose a template.');
     }
 
-    public function show(Portfolio $portfolio)
+    public function show(Request $request, Portfolio $portfolio)
     {
         $portfolio->load(['educations', 'skills']);
-        $template = in_array($portfolio->template, self::TEMPLATES) ? $portfolio->template : 'simple';
-        return view('portfolios.show', compact('portfolio', 'template'));
+
+        $saved = in_array($portfolio->template, self::TEMPLATES) ? $portfolio->template : 'simple';
+        $template = in_array($request->query('template'), self::TEMPLATES) ? $request->query('template') : $saved;
+        $embed = $request->boolean('embed');
+
+        return view('portfolios.show', compact('portfolio', 'template', 'saved', 'embed'));
     }
 
     public function edit(Portfolio $portfolio)
