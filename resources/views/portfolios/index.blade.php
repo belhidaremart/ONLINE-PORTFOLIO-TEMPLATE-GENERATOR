@@ -10,7 +10,7 @@
                 <h1 class="page-title">Manage Portfolios</h1>
                 <p class="page-sub">View, edit, or delete your saved portfolios.</p>
             </div>
-            <a href="{{ route('portfolios.create') }}" class="btn btn-primary">+ Create New</a>
+            
         </div>
 
         @if ($portfolios->count())
