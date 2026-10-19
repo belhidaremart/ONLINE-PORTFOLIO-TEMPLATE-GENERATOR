@@ -32,9 +32,9 @@
                     <div class="mock-line w-80"></div>
                     <div class="mock-line w-60"></div>
                     <div class="mock-tags">
-                        <span class="mock-tag">Laravel</span>
-                        <span class="mock-tag">Design</span>
-                        <span class="mock-tag">JavaScript</span>
+                        <span class="mock-tag">Simple</span>
+                        <span class="mock-tag">Modern</span>
+                        <span class="mock-tag">Creative</span>
                     </div>
                 </div>
             </div>
