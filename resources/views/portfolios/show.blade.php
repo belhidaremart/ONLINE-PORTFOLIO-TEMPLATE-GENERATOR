@@ -31,6 +31,9 @@
         .tb .confirm form { display: inline; }
         .tb .flash { margin: 0; padding: 8px 14px; border-radius: 10px; background: rgba(34,197,94,.18); border: 1px solid #22c55e; font-size: .9rem; }
         .tb .tip { margin: 0; font-size: .78rem; color: #8c97c9; }
+        .tb a.back { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-color: #22d3ee; color: #22d3ee; }
+        .tb a.back:hover { background: #22d3ee; color: #04202a; }
+        .tb a.back svg { width: 18px; height: 18px; }
     </style>
 </head>
 <body>
@@ -38,16 +41,25 @@
 @if (!$embed)
     <nav class="tb">
         <div class="tb-inner">
+            <div class="tb-row">
+                <a href="{{ route('portfolios.template', $portfolio) }}" class="back" aria-label="Back to choose a template">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path></svg>
+                    Back
+                </a>
+            </div>
+
             @if (session('success'))
                 <p class="flash">{{ session('success') }}</p>
             @endif
 
-            <div class="tb-row">
-                <span class="tb-label">Template</span>
-                @foreach ($names as $key => $label)
-                    <a href="{{ route('portfolios.show', ['portfolio' => $portfolio, 'template' => $key]) }}" class="{{ $template === $key ? 'on' : '' }}">{{ $label }}@if ($saved === $key) ✓@endif</a>
-                @endforeach
-            </div>
+            @if (request()->has('template'))
+                <div class="tb-row">
+                    <span class="tb-label">Template</span>
+                    @foreach ($names as $key => $label)
+                        <a href="{{ route('portfolios.show', ['portfolio' => $portfolio, 'template' => $key]) }}" class="{{ $template === $key ? 'on' : '' }}">{{ $label }}@if ($saved === $key) ✓@endif</a>
+                    @endforeach
+                </div>
+            @endif
 
             <div class="tb-row">
                 @if ($template !== $saved)
@@ -58,7 +70,9 @@
                         <button type="submit" class="go">Use the {{ $names[$template] }} template</button>
                     </form>
                 @endif
-                <a href="{{ route('portfolios.template', $portfolio) }}">All templates</a>
+                @if (request()->has('template'))
+                    <a href="{{ route('portfolios.template', $portfolio) }}">All templates</a>
+                @endif
                 <a href="{{ route('portfolios.edit', $portfolio) }}">Edit</a>
                 <a href="{{ route('portfolios.index') }}">Manage</a>
                 <details>

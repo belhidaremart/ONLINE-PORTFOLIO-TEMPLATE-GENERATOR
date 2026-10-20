@@ -32,8 +32,20 @@
 
             <ul class="nav-links">
                 <li><a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a></li>
-                <li><a href="{{ route('portfolios.index') }}" class="{{ request()->is('portfolios') ? 'active' : '' }}">Manage Portfolios</a></li>
-                <li><a href="{{ route('portfolios.create') }}" class="nav-cta">Create My Portfolio</a></li>
+                @auth
+                    <li><a href="{{ route('portfolios.index') }}" class="{{ request()->is('portfolios') ? 'active' : '' }}">Manage Portfolios</a></li>
+                    <li><a href="{{ route('portfolios.create') }}" class="nav-cta">Create My Portfolio</a></li>
+                    <li style="color:#9aa5cf;font-size:.9rem;">Hi, {{ auth()->user()->name }}</li>
+                    <li>
+                        <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                            @csrf
+                            <button type="submit" style="background:transparent;border:1px solid rgba(129,140,248,.5);color:#e5e9ff;padding:8px 16px;border-radius:999px;font:inherit;font-weight:600;cursor:pointer;">Logout</button>
+                        </form>
+                    </li>
+                @else
+                    <li><a href="{{ route('login') }}" class="{{ request()->is('login') ? 'active' : '' }}">Log In</a></li>
+                    <li><a href="{{ route('register') }}" class="nav-cta">Register</a></li>
+                @endauth
             </ul>
         </div>
     </header>

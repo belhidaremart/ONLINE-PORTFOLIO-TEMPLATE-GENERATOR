@@ -6,14 +6,25 @@ use App\Models\Portfolio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class PortfolioController extends Controller
 {
     private const TEMPLATES = ['simple', 'modern', 'creative'];
 
-    public function index()
+    public const LEVELS = [
+        'Elementary',
+        'High School',
+        'Senior High School',
+        'Vocational / TESDA',
+        "College / Bachelor's Degree",
+        "Master's Degree",
+        'Doctorate',
+    ];
+
+    public function index(Request $request)
     {
-        $portfolios = Portfolio::latest()->paginate(9);
+        $portfolios = $request->user()->portfolios()->latest()->paginate(9);
         return view('portfolios.index', compact('portfolios'));
     }
 
@@ -34,7 +45,7 @@ class PortfolioController extends Controller
                 $fields['profile_picture'] = $request->file('profile_picture')->store('profiles', 'public');
             }
 
-            $portfolio = Portfolio::create($fields);
+            $portfolio = $request->user()->portfolios()->create($fields);
             $this->saveRelated($portfolio, $data);
             return $portfolio;
         });
@@ -45,8 +56,9 @@ class PortfolioController extends Controller
 
     public function show(Request $request, Portfolio $portfolio)
     {
-        $portfolio->load(['educations', 'skills']);
+        $this->owned($portfolio);
 
+        $portfolio->load(['educations', 'skills']);
         $saved = in_array($portfolio->template, self::TEMPLATES) ? $portfolio->template : 'simple';
         $template = in_array($request->query('template'), self::TEMPLATES) ? $request->query('template') : $saved;
         $embed = $request->boolean('embed');
@@ -56,12 +68,16 @@ class PortfolioController extends Controller
 
     public function edit(Portfolio $portfolio)
     {
+        $this->owned($portfolio);
+
         $portfolio->load(['educations', 'skills']);
         return view('portfolios.edit', compact('portfolio'));
     }
 
     public function update(Request $request, Portfolio $portfolio)
     {
+        $this->owned($portfolio);
+
         $data = $this->validated($request);
 
         DB::transaction(function () use ($request, $data, $portfolio) {
@@ -86,6 +102,8 @@ class PortfolioController extends Controller
 
     public function destroy(Portfolio $portfolio)
     {
+        $this->owned($portfolio);
+
         if ($portfolio->profile_picture) {
             Storage::disk('public')->delete($portfolio->profile_picture);
         }
@@ -98,11 +116,15 @@ class PortfolioController extends Controller
 
     public function template(Portfolio $portfolio)
     {
+        $this->owned($portfolio);
+
         return view('portfolios.template', compact('portfolio'));
     }
 
     public function updateTemplate(Request $request, Portfolio $portfolio)
     {
+        $this->owned($portfolio);
+
         $request->validate([
             'template' => ['required', 'in:simple,modern,creative'],
         ], [
@@ -115,40 +137,68 @@ class PortfolioController extends Controller
             ->with('success', 'Template selected. Here is your portfolio!');
     }
 
+    // Only the owner of a portfolio may open or change it.
+    private function owned(Portfolio $portfolio): void
+    {
+        abort_unless((int) $portfolio->user_id === (int) auth()->id(), 404);
+    }
+
     private function validated(Request $request): array
     {
-        return $request->validate([
-            'full_name'       => ['required', 'string', 'max:120'],
+        $rules = [
+            'full_name'       => ['required', 'string', 'max:120', 'regex:/^[\p{L}\p{M}\s.\'\-]+$/u'],
             'age'             => ['nullable', 'integer', 'min:1', 'max:120'],
             'email'           => ['required', 'email', 'max:150'],
-            'contact_number'  => ['nullable', 'string', 'max:30'],
+            'contact_number'  => ['required', 'string', 'regex:/^[0-9+\-\s()]{7,20}$/'],
+            'address'         => ['required', 'string', 'max:255', 'regex:/^[\p{L}\p{N}\s.,#\/\'()\-]+$/u'],
+            'about'           => ['required', 'string', 'max:1000'],
             'facebook_link'   => ['nullable', 'url', 'max:255'],
             'profile_picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
 
-            'educations'              => ['nullable', 'array', 'max:10'],
-            'educations.*.school'     => ['nullable', 'string', 'max:150'],
-            'educations.*.degree'     => ['nullable', 'string', 'max:150'],
-            'educations.*.start_year' => ['nullable', 'string', 'max:10'],
-            'educations.*.end_year'   => ['nullable', 'string', 'max:10'],
+            'educations' => ['required', 'array', 'max:10'],
 
             'skills'        => ['nullable', 'array', 'max:30'],
             'skills.*.name' => ['nullable', 'string', 'max:60'],
-        ], [
+        ];
+
+        // The first education row is required. The other rows are optional.
+        foreach (range(0, 9) as $i) {
+            $first = $i === 0 ? 'required' : 'nullable';
+
+            $rules["educations.$i.school"]     = [$first, 'string', 'max:150'];
+            $rules["educations.$i.degree"]     = [$first, 'string', 'max:150'];
+            $rules["educations.$i.level"]      = [$first, 'string', Rule::in(self::LEVELS)];
+            $rules["educations.$i.start_year"] = ['nullable', 'string', 'max:10'];
+            $rules["educations.$i.end_year"]   = ['nullable', 'string', 'max:10'];
+        }
+
+        return $request->validate($rules, [
             'full_name.required'    => 'Please enter your name.',
+            'full_name.regex'       => 'The name can only have letters, spaces, hyphens, apostrophes and periods. No numbers.',
             'age.integer'           => 'Age must be a number.',
             'email.required'        => 'Please enter your email address.',
             'email.email'           => 'Please enter a valid email address.',
+            'contact_number.required' => 'Please enter your contact number.',
+            'contact_number.regex'  => 'Use numbers and the symbols + - ( ) only, 7 to 20 characters.',
+            'address.required'      => 'Please enter your address.',
+            'address.regex'         => 'The address has characters that are not allowed.',
+            'about.required'        => 'Please write a short text about yourself.',
+            'about.max'             => 'About Me must be 1000 characters or less.',
             'facebook_link.url'     => 'Enter the full link, starting with https://',
             'profile_picture.image' => 'The profile picture must be an image.',
             'profile_picture.mimes' => 'Allowed picture types: JPG, PNG, or WEBP.',
             'profile_picture.max'   => 'The picture must be 2 MB or smaller.',
+            'educations.0.school.required' => 'Please enter your school name.',
+            'educations.0.degree.required' => 'Please enter your course or program.',
+            'educations.0.level.required'  => 'Please choose your education level.',
+            'educations.0.level.in'        => 'Please choose a level from the list.',
         ]);
     }
 
     private function mainFields(array $data): array
     {
         return collect($data)->only([
-            'full_name', 'age', 'email', 'contact_number', 'facebook_link',
+            'full_name', 'age', 'email', 'contact_number', 'address', 'about', 'facebook_link',
         ])->toArray();
     }
 
@@ -156,7 +206,7 @@ class PortfolioController extends Controller
     {
         foreach ($data['educations'] ?? [] as $row) {
             if (!empty($row['school'])) {
-                $portfolio->educations()->create($row);
+                $portfolio->educations()->forceCreate($row);
             }
         }
 

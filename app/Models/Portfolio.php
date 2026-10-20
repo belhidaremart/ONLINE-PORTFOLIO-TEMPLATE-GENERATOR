@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Portfolio extends Model
 {
     protected $fillable = [
-        'full_name', 'age', 'email', 'contact_number',
+        'full_name', 'age', 'email', 'contact_number', 'address', 'about',
         'facebook_link', 'profile_picture', 'template',
     ];
 
@@ -20,5 +20,10 @@ class Portfolio extends Model
     public function skills(): HasMany
     {
         return $this->hasMany(Skill::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
