@@ -59,7 +59,7 @@
                         <iframe src="{{ route('portfolios.show', ['portfolio' => $portfolio, 'template' => $key, 'embed' => 1]) }}" title="{{ $info[0] }} template preview" loading="lazy" tabindex="-1"></iframe>
                     </a>
                     <div class="tpl-body">
-                        <h3>{{ $number }}. {{ $info[0] }} @if ($isSelected)<span class="tpl-badge">&#10003; Selected</span>@endif</h3>
+                        <h3>{{ $number }}. {{ $info[0] }}</h3>
                         <p>{{ $info[1] }}</p>
                         <div class="tpl-actions">
                             <a href="{{ route('portfolios.show', ['portfolio' => $portfolio, 'template' => $key]) }}" class="btn btn-sm btn-outline">Preview</a>

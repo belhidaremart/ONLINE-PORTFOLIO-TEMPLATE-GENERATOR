@@ -56,7 +56,7 @@
                 <div class="tb-row">
                     <span class="tb-label">Template</span>
                     @foreach ($names as $key => $label)
-                        <a href="{{ route('portfolios.show', ['portfolio' => $portfolio, 'template' => $key]) }}" class="{{ $template === $key ? 'on' : '' }}">{{ $label }}@if ($saved === $key) ✓@endif</a>
+                        <a href="{{ route('portfolios.show', ['portfolio' => $portfolio, 'template' => $key]) }}" class="{{ $template === $key ? 'on' : '' }}">{{ $label }}</a>
                     @endforeach
                 </div>
             @endif
@@ -69,9 +69,6 @@
                         <input type="hidden" name="template" value="{{ $template }}">
                         <button type="submit" class="go">Use the {{ $names[$template] }} template</button>
                     </form>
-                @endif
-                @if (request()->has('template'))
-                    <a href="{{ route('portfolios.template', $portfolio) }}">All templates</a>
                 @endif
                 <a href="{{ route('portfolios.edit', $portfolio) }}">Edit</a>
                 <a href="{{ route('portfolios.index') }}">Manage</a>
